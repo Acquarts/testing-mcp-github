@@ -1,0 +1,1179 @@
+# 📘 DOCUMENTACIÓN FUNCIONAL - APP-PILOTO-TESTING
+
+**Versión:** 1.0  
+**Fecha:** 2024  
+**Aplicación:** app-piloto-testing  
+**Framework:** Flask 3.0+  
+**Lenguaje:** Python  
+**Estado:** Aplicación Placeholder
+
+---
+
+## 📑 TABLA DE CONTENIDOS
+
+1. [Descripción General](#descripción-general)
+2. [Arquitectura del Sistema](#arquitectura-del-sistema)
+3. [Requisitos Funcionales](#requisitos-funcionales)
+4. [Flujos de Usuario](#flujos-de-usuario)
+5. [Especificación de Pantallas](#especificación-de-pantallas)
+6. [Gestión de Datos](#gestión-de-datos)
+7. [Seguridad y Autenticación](#seguridad-y-autenticación)
+8. [Guía de Instalación](#guía-de-instalación)
+9. [Guía de Uso](#guía-de-uso)
+10. [Casos de Uso](#casos-de-uso)
+11. [Reglas de Negocio](#reglas-de-negocio)
+12. [Limitaciones Conocidas](#limitaciones-conocidas)
+
+---
+
+## 1. DESCRIPCIÓN GENERAL
+
+### 1.1 Propósito
+
+**app-piloto-testing** es una aplicación web placeholder desarrollada con Flask que implementa un sistema de gestión de usuarios con autenticación, perfil de usuario y configuración de preferencias. Está diseñada como **prototipo funcional** para demostrar flujos de usuario completos en una aplicación web moderna.
+
+### 1.2 Alcance
+
+La aplicación proporciona:
+- ✅ Sistema de autenticación con sesiones
+- ✅ Panel de control (Dashboard) con información del usuario
+- ✅ Gestión de perfil personal
+- ✅ Configuración de preferencias
+- ✅ Interfaz responsive y moderna
+- ✅ Validaciones frontend y backend
+
+### 1.3 Usuarios Objetivo
+
+- **Administradores:** Acceso completo a todas las funcionalidades
+- **Usuarios Estándar:** Acceso a dashboard, perfil y configuración personal
+- **Desarrolladores:** Referencia para implementar aplicaciones reales
+
+### 1.4 Contexto Técnico
+
+| Aspecto | Detalle |
+|--------|--------|
+| **Framework** | Flask 3.0+ |
+| **Lenguaje** | Python 3.8+ |
+| **Base de Datos** | En memoria (sin persistencia) |
+| **Autenticación** | Sesiones Flask |
+| **Frontend** | HTML5 + CSS3 + JavaScript vanilla |
+| **Almacenamiento** | Diccionarios en memoria |
+
+---
+
+## 2. ARQUITECTURA DEL SISTEMA
+
+### 2.1 Componentes Principales
+
+```
+┌─────────────────────────────────────────────────────────┐
+│                    NAVEGADOR WEB                         │
+│              (Cliente HTTP/HTML/CSS/JS)                 │
+└────────────────────┬────────────────────────────────────┘
+                     │ HTTP Requests/Responses
+                     ▼
+┌─────────────────────────────────────────────────────────┐
+│                   FLASK APPLICATION                      │
+│  ┌──────────────────────────────────────────────────┐   │
+│  │  Rutas (Routes)                                  │   │
+│  │  - /login, /dashboard, /perfil, /configuracion  │   │
+│  └──────────────────────────────────────────────────┘   │
+│  ┌──────────────────────────────────────────────────┐   │
+│  │  Lógica de Negocio                               │   │
+│  │  - Autenticación, Validaciones, Sesiones        │   │
+│  └──────────────────────────────────────────────────┘   │
+│  ┌──────────────────────────────────────────────────┐   │
+│  │  Almacenamiento en Memoria                       │   │
+│  │  - Usuarios, Sesiones, Preferencias             │   │
+│  └──────────────────────────────────────────────────┘   │
+└─────────────────────────────────────────────────────────┘
+```
+
+### 2.2 Flujo de Datos
+
+```
+Usuario → Navegador → Flask App → Sesión → Respuesta HTML
+                          ↓
+                    Validación Backend
+                          ↓
+                    Almacenamiento Memoria
+                          ↓
+                    Renderizado Template
+```
+
+### 2.3 Estructura de Archivos
+
+```
+app-piloto-testing/
+├── app.py                 # Aplicación completa (22.9 KB)
+│   ├── Imports y configuración
+│   ├── Datos de usuarios (diccionario)
+│   ├── Decorador @login_required
+│   ├── Rutas (9 endpoints)
+│   ├── Templates HTML incrustados
+│   └── Estilos CSS incrustados
+├── requirements.txt       # Dependencias (Flask>=3.0)
+└── README.md             # Documentación básica
+```
+
+---
+
+## 3. REQUISITOS FUNCIONALES
+
+### 3.1 Autenticación (RF-001)
+
+**Descripción:** El sistema debe permitir a los usuarios autenticarse con usuario y contraseña.
+
+**Requisitos:**
+- RF-001.1: Validar credenciales contra base de datos de usuarios
+- RF-001.2: Crear sesión al login exitoso
+- RF-001.3: Rechazar credenciales inválidas con mensaje de error
+- RF-001.4: Permitir logout y destruir sesión
+- RF-001.5: Redirigir a login si accede sin autenticación
+
+**Criterios de Aceptación:**
+- ✅ Login exitoso con usuario "admin" y contraseña "admin123"
+- ✅ Login exitoso con usuario "user1" y contraseña "user123"
+- ✅ Rechazo de credenciales inválidas
+- ✅ Sesión persiste durante la navegación
+- ✅ Logout destruye la sesión
+
+### 3.2 Dashboard (RF-002)
+
+**Descripción:** Mostrar panel de control con información del usuario autenticado.
+
+**Requisitos:**
+- RF-002.1: Mostrar nombre y rol del usuario
+- RF-002.2: Mostrar estadísticas (departamento, ciudad, idioma)
+- RF-002.3: Mostrar datos de contacto
+- RF-002.4: Permitir búsqueda rápida con dropdown
+- RF-002.5: Proporcionar acceso rápido a Perfil y Configuración
+
+**Criterios de Aceptación:**
+- ✅ Dashboard muestra datos correctos del usuario
+- ✅ Búsqueda filtra por categoría seleccionada
+- ✅ Botones de navegación funcionan correctamente
+- ✅ Información se actualiza tras cambios en perfil
+
+### 3.3 Gestión de Perfil (RF-003)
+
+**Descripción:** Permitir al usuario editar su información personal.
+
+**Requisitos:**
+- RF-003.1: Editar nombre completo
+- RF-003.2: Editar email
+- RF-003.3: Editar teléfono
+- RF-003.4: Seleccionar departamento
+- RF-003.5: Seleccionar ciudad
+- RF-003.6: Seleccionar idioma preferido
+- RF-003.7: Cambiar contraseña
+- RF-003.8: Validar datos antes de guardar
+
+**Criterios de Aceptación:**
+- ✅ Todos los campos se editan correctamente
+- ✅ Validaciones frontend previenen datos inválidos
+- ✅ Cambio de contraseña requiere confirmación
+- ✅ Datos se guardan en sesión
+- ✅ Botón cancelar descarta cambios
+
+### 3.4 Configuración de Preferencias (RF-004)
+
+**Descripción:** Permitir al usuario configurar preferencias de la aplicación.
+
+**Requisitos:**
+- RF-004.1: Habilitar/deshabilitar notificaciones por email
+- RF-004.2: Habilitar/deshabilitar notificaciones por SMS
+- RF-004.3: Seleccionar tema (claro, oscuro, automático)
+- RF-004.4: Seleccionar idioma de la aplicación
+- RF-004.5: Opción de eliminar cuenta (placeholder)
+
+**Criterios de Aceptación:**
+- ✅ Preferencias se guardan en sesión
+- ✅ Tema se aplica inmediatamente
+- ✅ Idioma se refleja en la interfaz
+- ✅ Notificaciones se pueden activar/desactivar
+
+### 3.5 Navegación (RF-005)
+
+**Descripción:** Permitir navegación fluida entre pantallas.
+
+**Requisitos:**
+- RF-005.1: Ruta raíz redirecciona a login o dashboard
+- RF-005.2: Menú de navegación disponible en todas las pantallas
+- RF-005.3: Botones de navegación funcionan correctamente
+- RF-005.4: Breadcrumbs muestran ubicación actual
+
+**Criterios de Aceptación:**
+- ✅ Navegación es intuitiva
+- ✅ No hay rutas rotas
+- ✅ Redirecciones funcionan correctamente
+
+---
+
+## 4. FLUJOS DE USUARIO
+
+### 4.1 Flujo de Autenticación
+
+```
+┌─────────────────────────────────────────────────────────┐
+│ 1. Usuario accede a http://localhost:5000               │
+└────────────────┬────────────────────────────────────────┘
+                 │
+                 ▼
+┌─────────────────────────────────────────────────────────┐
+│ 2. Sistema verifica sesión                              │
+│    - Si existe → Redirige a /dashboard                  │
+│    - Si no existe → Redirige a /login                   │
+└────────────────┬────────────────────────────────────────┘
+                 │
+                 ▼
+┌─────────────────────────────────────────────────────────┐
+│ 3. Usuario ingresa credenciales en formulario           │
+│    - Usuario: admin                                     │
+│    - Contraseña: admin123                               │
+└────────────────┬────────────────────────────────────────┘
+                 │
+                 ▼
+┌─────────────────────────────────────────────────────────┐
+│ 4. Sistema valida credenciales                          │
+│    - Busca usuario en diccionario                       │
+│    - Compara contraseña                                 │
+└────────────────┬────────────────────────────────────────┘
+                 │
+        ┌────────┴────────┐
+        │                 │
+        ▼                 ▼
+    ✅ VÁLIDO         ❌ INVÁLIDO
+        │                 │
+        ▼                 ▼
+   Crear sesión    Mostrar error
+   Redirigir a     Mantener en login
+   /dashboard
+```
+
+### 4.2 Flujo de Edición de Perfil
+
+```
+┌─────────────────────────────────────────────────────────┐
+│ 1. Usuario en Dashboard → Clic en "Editar Perfil"       │
+└────────────────┬────────────────────────────────────────┘
+                 │
+                 ▼
+┌─────────────────────────────────────────────────────────┐
+│ 2. Sistema carga página /perfil                         │
+│    - Precarga datos actuales del usuario                │
+│    - Muestra formulario editable                        │
+└────────────────┬────────────────────────────────────────┘
+                 │
+                 ▼
+┌─────────────────────────────────────────────────────────┐
+│ 3. Usuario modifica datos                               │
+│    - Nombre, email, teléfono                            │
+│    - Departamento, ciudad, idioma                       │
+└────────────────┬────────────────────────────────────────┘
+                 │
+                 ▼
+┌─────────────────────────────────────────────────────────┐
+│ 4. Usuario clic en "Guardar Cambios"                    │
+└────────────────┬────────────────────────────────────────┘
+                 │
+                 ▼
+┌─────────────────────────────────────────────────────────┐
+│ 5. Sistema valida datos (frontend + backend)            │
+│    - Email válido                                       │
+│    - Teléfono válido                                    │
+│    - Campos requeridos completos                        │
+└────────────────┬────────────────────────────────────────┘
+                 │
+        ┌────────┴────────┐
+        │                 │
+        ▼                 ▼
+    ✅ VÁLIDO         ❌ INVÁLIDO
+        │                 │
+        ▼                 ▼
+   Guardar en      Mostrar errores
+   sesión          Mantener en perfil
+   Redirigir a
+   /dashboard
+```
+
+### 4.3 Flujo de Configuración de Preferencias
+
+```
+┌─────────────────────────────────────────────────────────┐
+│ 1. Usuario en Dashboard → Clic en "Configuración"       │
+└────────────────┬────────────────────────────────────────┘
+                 │
+                 ▼
+┌─────────────────────────────────────────────────────────┐
+│ 2. Sistema carga página /configuracion                  │
+│    - Muestra preferencias actuales                      │
+│    - Checkboxes, radio buttons, selects                 │
+└────────────────┬────────────────────────────────────────┘
+                 │
+                 ▼
+┌─────────────────────────────────────────────────────────┐
+│ 3. Usuario modifica preferencias                        │
+│    - Notificaciones (email, SMS)                        │
+│    - Tema (claro, oscuro, automático)                   │
+│    - Idioma                                             │
+└────────────────┬────────────────────────────────────────┘
+                 │
+                 ▼
+┌─────────────────────────────────────────────────────────┐
+│ 4. Usuario clic en "Guardar Preferencias"               │
+└────────────────┬────────────────────────────────────────┘
+                 │
+                 ▼
+┌─────────────────────────────────────────────────────────┐
+│ 5. Sistema guarda preferencias en sesión                │
+│    - Aplica tema inmediatamente                         │
+│    - Actualiza idioma de interfaz                       │
+└────────────────┬────────────────────────────────────────┘
+                 │
+                 ▼
+┌─────────────────────────────────────────────────────────┐
+│ 6. Redirige a /dashboard con confirmación               │
+└─────────────────────────────────────────────────────────┘
+```
+
+### 4.4 Flujo de Búsqueda en Dashboard
+
+```
+┌─────────────────────────────────────────────────────────┐
+│ 1. Usuario en Dashboard                                 │
+└────────────────┬────────────────────────────────────────┘
+                 │
+                 ▼
+┌─────────────────────────────────────────────────────────┐
+│ 2. Usuario selecciona categoría en dropdown             │
+│    - Opciones: Todos, Nombre, Email, Departamento      │
+└────────────────┬────────────────────────────────────────┘
+                 │
+                 ▼
+┌─────────────────────────────────────────────────────────┐
+│ 3. Usuario ingresa término de búsqueda                  │
+└────────────────┬────────────────────────────────────────┘
+                 │
+                 ▼
+┌─────────────────────────────────────────────────────────┐
+│ 4. Usuario clic en "Buscar"                             │
+└────────────────┬────────────────────────────────────────┘
+                 │
+                 ▼
+┌─────────────────────────────────────────────────────────┐
+│ 5. Sistema filtra resultados según categoría            │
+│    - Busca en campo seleccionado                        │
+│    - Muestra coincidencias                              │
+└────────────────┬────────────────────────────────────────┘
+                 │
+                 ▼
+┌─────────────────────────────────────────────────────────┐
+│ 6. Muestra resultados en tabla                          │
+└─────────────────────────────────────────────────────────┘
+```
+
+---
+
+## 5. ESPECIFICACIÓN DE PANTALLAS
+
+### 5.1 Pantalla de Login
+
+**Ruta:** `/login` (GET, POST)  
+**Acceso:** Público  
+**Descripción:** Formulario de autenticación
+
+#### Elementos:
+| Elemento | Tipo | ID | Validación | Requerido |
+|----------|------|----|-----------|---------| 
+| Usuario | Input Text | username | No vacío | Sí |
+| Contraseña | Input Password | password | No vacío | Sí |
+| Botón Entrar | Button | - | - | Sí |
+| Mensaje Error | Div | error-msg | - | No |
+
+#### Validaciones:
+- ✅ Usuario no puede estar vacío
+- ✅ Contraseña no puede estar vacía
+- ✅ Usuario debe existir en base de datos
+- ✅ Contraseña debe coincidir
+
+#### Datos de Prueba:
+```
+Usuario: admin | Contraseña: admin123 | Rol: Administrador
+Usuario: user1 | Contraseña: user123  | Rol: Usuario
+Usuario: user2 | Contraseña: user456  | Rol: Usuario
+```
+
+#### Flujo:
+1. Usuario ingresa credenciales
+2. Sistema valida
+3. Si válido → Crear sesión → Redirigir a /dashboard
+4. Si inválido → Mostrar error → Mantener en /login
+
+---
+
+### 5.2 Pantalla de Dashboard
+
+**Ruta:** `/dashboard` (GET)  
+**Acceso:** Protegido (requiere login)  
+**Descripción:** Panel de control principal
+
+#### Secciones:
+
+**A. Información del Usuario**
+- Nombre completo
+- Rol
+- Departamento
+- Ciudad
+- Idioma preferido
+
+**B. Búsqueda Rápida**
+| Elemento | Tipo | ID | Opciones |
+|----------|------|----|---------| 
+| Categoría | Select | cat | Todos, Nombre, Email, Departamento |
+| Término | Input Text | q | - |
+| Botón | Button | - | Buscar |
+
+**C. Acceso Rápido**
+- Botón "Editar Perfil" → /perfil
+- Botón "Configuración" → /configuracion
+- Botón "Logout" → /logout
+
+#### Datos Mostrados:
+```
+Nombre: [nombre_usuario]
+Rol: [rol_usuario]
+Departamento: [departamento]
+Ciudad: [ciudad]
+Idioma: [idioma]
+Email: [email]
+Teléfono: [telefono]
+```
+
+#### Flujo:
+1. Usuario accede a /dashboard
+2. Sistema verifica sesión
+3. Si válida → Cargar datos → Mostrar dashboard
+4. Si inválida → Redirigir a /login
+
+---
+
+### 5.3 Pantalla de Perfil
+
+**Ruta:** `/perfil` (GET, POST)  
+**Acceso:** Protegido (requiere login)  
+**Descripción:** Edición de información personal
+
+#### Formulario Principal:
+
+| Campo | Tipo | ID | Validación | Requerido |
+|-------|------|----|-----------|---------| 
+| Nombre Completo | Input Text | nombre | No vacío, 3-100 caracteres | Sí |
+| Email | Input Email | email | Formato email válido | Sí |
+| Teléfono | Input Tel | telefono | Formato teléfono válido | No |
+| Departamento | Select | departamento | Opción válida | Sí |
+| Ciudad | Select | ciudad | Opción válida | Sí |
+| Idioma | Select | idioma | Opción válida | Sí |
+
+#### Opciones de Selects:
+
+**Departamentos:**
+- Recursos Humanos
+- Tecnología
+- Ventas
+- Marketing
+- Finanzas
+
+**Ciudades:**
+- Madrid
+- Barcelona
+- Valencia
+- Bilbao
+- Sevilla
+
+**Idiomas:**
+- Español
+- Inglés
+- Francés
+- Alemán
+- Portugués
+
+#### Sección de Cambio de Contraseña:
+
+| Campo | Tipo | ID | Validación | Requerido |
+|-------|------|----|-----------|---------| 
+| Contraseña Actual | Input Password | pass_actual | No vacío | Sí (si cambia) |
+| Contraseña Nueva | Input Password | pass_nueva | 8+ caracteres | Sí (si cambia) |
+| Confirmar Contraseña | Input Password | pass_confirmar | Debe coincidir | Sí (si cambia) |
+
+#### Botones:
+- "Guardar Cambios" → POST /perfil → Redirigir a /dashboard
+- "Cancelar" → GET /dashboard
+
+#### Validaciones Frontend:
+```javascript
+- Nombre: /^[a-zA-ZáéíóúÁÉÍÓÚ\s]{3,100}$/
+- Email: /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+- Teléfono: /^[\d\s\-\+\(\)]{7,20}$/
+- Contraseña: Mínimo 8 caracteres
+```
+
+#### Flujo:
+1. GET /perfil → Cargar datos actuales → Mostrar formulario
+2. Usuario modifica datos
+3. POST /perfil → Validar → Guardar en sesión → Redirigir a /dashboard
+
+---
+
+### 5.4 Pantalla de Configuración
+
+**Ruta:** `/configuracion` (GET, POST)  
+**Acceso:** Protegido (requiere login)  
+**Descripción:** Preferencias de la aplicación
+
+#### Sección 1: Notificaciones
+
+| Elemento | Tipo | ID | Descripción |
+|----------|------|----|-----------| 
+| Email | Checkbox | noti_email | Recibir notificaciones por email |
+| SMS | Checkbox | noti_sms | Recibir notificaciones por SMS |
+
+#### Sección 2: Tema de Interfaz
+
+| Elemento | Tipo | Value | Descripción |
+|----------|------|-------|----------| 
+| Claro | Radio | claro | Tema claro |
+| Oscuro | Radio | oscuro | Tema oscuro |
+| Automático | Radio | auto | Automático según sistema |
+
+#### Sección 3: Idioma
+
+| Elemento | Tipo | ID | Opciones |
+|----------|------|----|---------| 
+| Idioma | Select | idioma_cfg | Español, Inglés, Francés, Alemán, Portugués |
+
+#### Sección 4: Zona de Peligro
+
+| Elemento | Tipo | Descripción |
+|----------|------|----------| 
+| Eliminar Cuenta | Button | Placeholder (no funcional) |
+
+#### Botones:
+- "Guardar Preferencias" → POST /configuracion → Redirigir a /dashboard
+- "Cancelar" → GET /dashboard
+
+#### Flujo:
+1. GET /configuracion → Cargar preferencias → Mostrar formulario
+2. Usuario modifica preferencias
+3. POST /configuracion → Guardar en sesión → Aplicar tema → Redirigir a /dashboard
+
+---
+
+## 6. GESTIÓN DE DATOS
+
+### 6.1 Estructura de Datos de Usuario
+
+```python
+{
+    "username": "admin",
+    "password": "admin123",
+    "nombre": "Ana García",
+    "email": "ana.garcia@example.com",
+    "telefono": "+34 912 345 678",
+    "departamento": "Recursos Humanos",
+    "ciudad": "Madrid",
+    "idioma": "Español",
+    "rol": "Administrador"
+}
+```
+
+### 6.2 Estructura de Sesión
+
+```python
+session = {
+    "username": "admin",
+    "nombre": "Ana García",
+    "rol": "Administrador",
+    "email": "ana.garcia@example.com",
+    "telefono": "+34 912 345 678",
+    "departamento": "Recursos Humanos",
+    "ciudad": "Madrid",
+    "idioma": "Español",
+    "tema": "claro",
+    "notificaciones": {
+        "email": True,
+        "sms": False
+    }
+}
+```
+
+### 6.3 Usuarios Predefinidos
+
+```python
+USUARIOS = {
+    "admin": {
+        "password": "admin123",
+        "nombre": "Ana García",
+        "email": "ana.garcia@example.com",
+        "telefono": "+34 912 345 678",
+        "departamento": "Recursos Humanos",
+        "ciudad": "Madrid",
+        "idioma": "Español",
+        "rol": "Administrador"
+    },
+    "user1": {
+        "password": "user123",
+        "nombre": "Carlos López",
+        "email": "carlos.lopez@example.com",
+        "telefono": "+34 923 456 789",
+        "departamento": "Tecnología",
+        "ciudad": "Barcelona",
+        "idioma": "Español",
+        "rol": "Usuario"
+    },
+    "user2": {
+        "password": "user456",
+        "nombre": "María Fernández",
+        "email": "maria.fernandez@example.com",
+        "telefono": "+34 934 567 890",
+        "departamento": "Ventas",
+        "ciudad": "Valencia",
+        "idioma": "Inglés",
+        "rol": "Usuario"
+    }
+}
+```
+
+### 6.4 Ciclo de Vida de Datos
+
+```
+1. INICIO
+   └─ Usuarios cargados en memoria desde diccionario
+
+2. LOGIN
+   └─ Credenciales validadas
+   └─ Sesión creada con datos del usuario
+
+3. NAVEGACIÓN
+   └─ Datos de sesión disponibles en todas las páginas
+   └─ Cambios se guardan en sesión
+
+4. LOGOUT
+   └─ Sesión destruida
+   └─ Datos se pierden (no hay persistencia)
+
+5. REINICIO
+   └─ Todos los datos se reinician
+   └─ Usuarios vuelven a estado inicial
+```
+
+### 6.5 Persistencia
+
+⚠️ **IMPORTANTE:** Esta aplicación **NO tiene persistencia de datos**
+
+- ✅ Los datos se almacenan en memoria (diccionarios Python)
+- ✅ Los cambios se pierden al reiniciar el servidor
+- ✅ Cada sesión es independiente
+- ✅ No hay base de datos
+
+**Para producción, se debe implementar:**
+- Base de datos (PostgreSQL, MySQL, MongoDB)
+- ORM (SQLAlchemy)
+- Migraciones de datos
+- Backups
+
+---
+
+## 7. SEGURIDAD Y AUTENTICACIÓN
+
+### 7.1 Mecanismo de Autenticación
+
+**Tipo:** Sesiones Flask  
+**Almacenamiento:** Cookies del navegador (firmadas)  
+**Duración:** Sesión del navegador
+
+#### Proceso:
+```
+1. Usuario envía credenciales (POST /login)
+2. Sistema valida contra diccionario de usuarios
+3. Si válido → Crear sesión con session['username']
+4. Navegador almacena cookie de sesión
+5. Cada request incluye cookie
+6. Sistema verifica sesión en cada página protegida
+```
+
+### 7.2 Decorador @login_required
+
+```python
+def login_required(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if 'username' not in session:
+            return redirect(url_for('login'))
+        return f(*args, **kwargs)
+    return decorated_function
+```
+
+**Rutas Protegidas:**
+- ✅ /dashboard
+- ✅ /perfil
+- ✅ /configuracion
+- ✅ /logout
+
+**Rutas Públicas:**
+- ✅ /
+- ✅ /login
+
+### 7.3 Validaciones de Seguridad
+
+#### Frontend:
+- ✅ Validación de formato de email
+- ✅ Validación de longitud de contraseña
+- ✅ Validación de campos requeridos
+- ✅ Prevención de inyección de scripts (HTML escaping)
+
+#### Backend:
+- ✅ Validación de credenciales
+- ✅ Verificación de sesión
+- ✅ Validación de datos POST
+- ✅ Protección contra CSRF (Flask por defecto)
+
+### 7.4 Limitaciones de Seguridad
+
+⚠️ **ADVERTENCIA:** Esta es una aplicación PLACEHOLDER. NO usar en producción.
+
+**Problemas de seguridad:**
+- ❌ Contraseñas almacenadas en texto plano
+- ❌ Sin hash de contraseñas (bcrypt, argon2)
+- ❌ Sin rate limiting
+- ❌ Sin HTTPS
+- ❌ Sin protección contra fuerza bruta
+- ❌ Sin validación CSRF explícita
+- ❌ Sin encriptación de datos sensibles
+- ❌ Sin logs de auditoría
+
+**Para producción, implementar:**
+- ✅ Hash de contraseñas (bcrypt)
+- ✅ Rate limiting
+- ✅ HTTPS/TLS
+- ✅ Protección CSRF
+- ✅ Validación de entrada robusta
+- ✅ Logs de auditoría
+- ✅ Encriptación de datos sensibles
+- ✅ 2FA (autenticación de dos factores)
+
+### 7.5 Roles y Permisos
+
+**Roles Disponibles:**
+- **Administrador:** Acceso completo
+- **Usuario:** Acceso a funcionalidades básicas
+
+**Nota:** Los roles están definidos pero no se usan para control de acceso en esta versión.
+
+---
+
+## 8. GUÍA DE INSTALACIÓN
+
+### 8.1 Requisitos Previos
+
+- Python 3.8 o superior
+- pip (gestor de paquetes de Python)
+- Navegador web moderno
+
+### 8.2 Pasos de Instalación
+
+#### 1. Clonar el repositorio
+```bash
+git clone https://github.com/Acquarts/app-piloto-testing.git
+cd app-piloto-testing
+```
+
+#### 2. Crear entorno virtual (recomendado)
+```bash
+# En Windows
+python -m venv venv
+venv\Scripts\activate
+
+# En macOS/Linux
+python3 -m venv venv
+source venv/bin/activate
+```
+
+#### 3. Instalar dependencias
+```bash
+pip install -r requirements.txt
+```
+
+#### 4. Ejecutar la aplicación
+```bash
+python app.py
+```
+
+#### 5. Acceder a la aplicación
+```
+http://127.0.0.1:5000
+```
+
+### 8.3 Verificación de Instalación
+
+```bash
+# Verificar Python
+python --version
+
+# Verificar pip
+pip --version
+
+# Verificar Flask
+pip show flask
+
+# Ejecutar tests (si existen)
+pytest
+```
+
+### 8.4 Solución de Problemas
+
+**Problema:** Puerto 5000 ya está en uso
+```bash
+# Cambiar puerto en app.py
+app.run(debug=True, port=5001)
+```
+
+**Problema:** Módulo Flask no encontrado
+```bash
+pip install --upgrade flask
+```
+
+**Problema:** Errores de permisos
+```bash
+# En Windows
+python -m pip install --upgrade pip
+
+# En macOS/Linux
+sudo pip install --upgrade pip
+```
+
+---
+
+## 9. GUÍA DE USO
+
+### 9.1 Primer Acceso
+
+1. Abrir navegador en `http://127.0.0.1:5000`
+2. Sistema redirige a `/login`
+3. Ingresar credenciales:
+   - Usuario: `admin`
+   - Contraseña: `admin123`
+4. Clic en "Entrar"
+5. Sistema redirige a `/dashboard`
+
+### 9.2 Navegación Básica
+
+```
+Login → Dashboard → Perfil
+                 ↓
+            Configuración
+                 ↓
+              Logout
+```
+
+### 9.3 Editar Perfil
+
+1. En Dashboard, clic en "Editar Perfil"
+2. Modificar campos deseados
+3. Clic en "Guardar Cambios"
+4. Sistema redirige a Dashboard con cambios aplicados
+
+### 9.4 Cambiar Preferencias
+
+1. En Dashboard, clic en "Configuración"
+2. Modificar notificaciones, tema, idioma
+3. Clic en "Guardar Preferencias"
+4. Sistema aplica cambios inmediatamente
+
+### 9.5 Buscar en Dashboard
+
+1. En Dashboard, seleccionar categoría (Nombre, Email, etc.)
+2. Ingresar término de búsqueda
+3. Clic en "Buscar"
+4. Sistema muestra resultados
+
+### 9.6 Cerrar Sesión
+
+1. En cualquier página, clic en "Logout"
+2. Sistema destruye sesión
+3. Redirige a `/login`
+
+---
+
+## 10. CASOS DE USO
+
+### CU-001: Autenticación de Usuario
+
+**Actor:** Usuario no autenticado  
+**Precondición:** Usuario tiene credenciales válidas  
+**Flujo Principal:**
+1. Usuario accede a aplicación
+2. Sistema muestra formulario de login
+3. Usuario ingresa usuario y contraseña
+4. Usuario clic en "Entrar"
+5. Sistema valida credenciales
+6. Sistema crea sesión
+7. Sistema redirige a dashboard
+
+**Flujo Alternativo (Credenciales Inválidas):**
+1. Sistema valida credenciales
+2. Credenciales no coinciden
+3. Sistema muestra mensaje de error
+4. Usuario permanece en login
+
+**Postcondición:** Usuario autenticado con sesión activa
+
+---
+
+### CU-002: Ver Dashboard
+
+**Actor:** Usuario autenticado  
+**Precondición:** Usuario tiene sesión activa  
+**Flujo Principal:**
+1. Usuario accede a `/dashboard`
+2. Sistema verifica sesión
+3. Sistema carga datos del usuario
+4. Sistema muestra dashboard con información personal
+5. Usuario ve estadísticas y datos de contacto
+
+**Postcondición:** Dashboard mostrado correctamente
+
+---
+
+### CU-003: Editar Perfil
+
+**Actor:** Usuario autenticado  
+**Precondición:** Usuario tiene sesión activa  
+**Flujo Principal:**
+1. Usuario en dashboard clic en "Editar Perfil"
+2. Sistema carga página `/perfil`
+3. Sistema precarga datos actuales
+4. Usuario modifica campos
+5. Usuario clic en "Guardar Cambios"
+6. Sistema valida datos
+7. Sistema guarda en sesión
+8. Sistema redirige a dashboard
+
+**Flujo Alternativo (Datos Inválidos):**
+1. Sistema valida datos
+2. Datos no cumplen validaciones
+3. Sistema muestra errores
+4. Usuario permanece en perfil
+
+**Postcondición:** Datos de perfil actualizados en sesión
+
+---
+
+### CU-004: Configurar Preferencias
+
+**Actor:** Usuario autenticado  
+**Precondición:** Usuario tiene sesión activa  
+**Flujo Principal:**
+1. Usuario en dashboard clic en "Configuración"
+2. Sistema carga página `/configuracion`
+3. Sistema muestra preferencias actuales
+4. Usuario modifica notificaciones, tema, idioma
+5. Usuario clic en "Guardar Preferencias"
+6. Sistema guarda en sesión
+7. Sistema aplica tema
+8. Sistema redirige a dashboard
+
+**Postcondición:** Preferencias actualizadas y aplicadas
+
+---
+
+### CU-005: Buscar en Dashboard
+
+**Actor:** Usuario autenticado  
+**Precondición:** Usuario en dashboard  
+**Flujo Principal:**
+1. Usuario selecciona categoría de búsqueda
+2. Usuario ingresa término
+3. Usuario clic en "Buscar"
+4. Sistema filtra resultados
+5. Sistema muestra coincidencias
+
+**Postcondición:** Resultados mostrados correctamente
+
+---
+
+### CU-006: Cerrar Sesión
+
+**Actor:** Usuario autenticado  
+**Precondición:** Usuario tiene sesión activa  
+**Flujo Principal:**
+1. Usuario clic en "Logout"
+2. Sistema destruye sesión
+3. Sistema redirige a `/login`
+
+**Postcondición:** Sesión destruida, usuario no autenticado
+
+---
+
+## 11. REGLAS DE NEGOCIO
+
+### RN-001: Autenticación Obligatoria
+- Todas las páginas excepto `/login` requieren sesión activa
+- Si no hay sesión, redirigir a `/login`
+
+### RN-002: Validación de Credenciales
+- Usuario debe existir en diccionario de usuarios
+- Contraseña debe coincidir exactamente
+- Ambos campos son requeridos
+
+### RN-003: Datos de Perfil
+- Nombre: 3-100 caracteres, solo letras y espacios
+- Email: Formato válido (usuario@dominio.com)
+- Teléfono: Formato válido (opcional)
+- Departamento, ciudad, idioma: Selección de lista predefinida
+
+### RN-004: Cambio de Contraseña
+- Contraseña nueva debe tener mínimo 8 caracteres
+- Debe coincidir con confirmación
+- No se valida contraseña actual (placeholder)
+
+### RN-005: Preferencias de Usuario
+- Notificaciones: Pueden estar habilitadas o deshabilitadas
+- Tema: Solo valores permitidos (claro, oscuro, automático)
+- Idioma: Solo idiomas soportados
+
+### RN-006: Persistencia de Datos
+- Los datos se almacenan en sesión (memoria)
+- Los datos se pierden al cerrar sesión
+- No hay persistencia en base de datos
+
+### RN-007: Roles y Acceso
+- Administrador: Acceso completo
+- Usuario: Acceso a funcionalidades básicas
+- Nota: No se implementa control de acceso basado en roles
+
+### RN-008: Búsqueda
+- Búsqueda es case-insensitive
+- Búsqueda filtra por categoría seleccionada
+- Búsqueda vacía muestra todos los resultados
+
+---
+
+## 12. LIMITACIONES CONOCIDAS
+
+### 12.1 Limitaciones Técnicas
+
+| Limitación | Impacto | Solución |
+|-----------|--------|---------|
+| Sin base de datos | Datos se pierden al reiniciar | Implementar BD (PostgreSQL, MySQL) |
+| Contraseñas en texto plano | Riesgo de seguridad | Usar bcrypt/argon2 |
+| Sin persistencia | No hay historial | Implementar logs y auditoría |
+| Almacenamiento en memoria | Escalabilidad limitada | Usar caché distribuido (Redis) |
+| Sin HTTPS | Datos en texto plano | Configurar SSL/TLS |
+| Sin rate limiting | Vulnerable a fuerza bruta | Implementar rate limiting |
+
+### 12.2 Limitaciones Funcionales
+
+| Limitación | Descripción |
+|-----------|------------|
+| Cambio de contraseña | No valida contraseña actual |
+| Eliminar cuenta | Botón es placeholder, no funciona |
+| Notificaciones | No se envían realmente |
+| Búsqueda | Solo busca en datos del usuario actual |
+| Roles | Definidos pero no se usan para control de acceso |
+| Idioma | Interfaz no cambia realmente de idioma |
+
+### 12.3 Limitaciones de Escalabilidad
+
+- ✅ Máximo 3 usuarios simultáneos (usuarios predefinidos)
+- ✅ No hay soporte para múltiples servidores
+- ✅ No hay caché distribuido
+- ✅ No hay balanceo de carga
+
+### 12.4 Limitaciones de Compatibilidad
+
+- ✅ Requiere Python 3.8+
+- ✅ Requiere navegador moderno (ES6+)
+- ✅ No soporta navegadores antiguos (IE11)
+
+---
+
+## 13. ROADMAP FUTURO
+
+### Fase 1: Mejoras de Seguridad
+- [ ] Implementar hash de contraseñas (bcrypt)
+- [ ] Agregar HTTPS/TLS
+- [ ] Implementar rate limiting
+- [ ] Agregar CSRF protection explícita
+- [ ] Implementar 2FA
+
+### Fase 2: Persistencia de Datos
+- [ ] Integrar base de datos (PostgreSQL)
+- [ ] Implementar ORM (SQLAlchemy)
+- [ ] Crear migraciones
+- [ ] Implementar backups
+
+### Fase 3: Funcionalidades Avanzadas
+- [ ] Sistema de notificaciones real
+- [ ] Cambio de contraseña funcional
+- [ ] Eliminación de cuenta
+- [ ] Historial de cambios
+- [ ] Auditoría de acceso
+
+### Fase 4: Escalabilidad
+- [ ] Implementar caché (Redis)
+- [ ] Agregar balanceo de carga
+- [ ] Soporte para múltiples servidores
+- [ ] Implementar API REST
+- [ ] Agregar documentación OpenAPI
+
+### Fase 5: Experiencia de Usuario
+- [ ] Mejorar diseño UI/UX
+- [ ] Agregar temas adicionales
+- [ ] Soporte multiidioma real
+- [ ] Responsive design mejorado
+- [ ] Accesibilidad (WCAG 2.1)
+
+---
+
+## 14. REFERENCIAS Y RECURSOS
+
+### Documentación Oficial
+- [Flask Documentation](https://flask.palletsprojects.com/)
+- [Python Documentation](https://docs.python.org/3/)
+- [HTML5 Specification](https://html.spec.whatwg.org/)
+- [CSS3 Specification](https://www.w3.org/Style/CSS/)
+
+### Herramientas Recomendadas
+- **IDE:** Visual Studio Code, PyCharm
+- **Testing:** pytest, Selenium
+- **Versionado:** Git, GitHub
+- **Deployment:** Docker, Heroku, AWS
+
+### Mejores Prácticas
+- [OWASP Top 10](https://owasp.org/www-project-top-ten/)
+- [PEP 8 - Python Style Guide](https://www.python.org/dev/peps/pep-0008/)
+- [Flask Best Practices](https://flask.palletsprojects.com/en/latest/patterns/)
+
+---
+
+## 15. HISTORIAL DE CAMBIOS
+
+| Versión | Fecha | Cambios |
+|---------|-------|---------|
+| 1.0 | 2024 | Versión inicial - Aplicación placeholder |
+
+---
+
+## 16. CONTACTO Y SOPORTE
+
+**Repositorio:** https://github.com/Acquarts/app-piloto-testing  
+**Propietario:** Acquarts  
+**Licencia:** Sin especificar  
+**Estado:** Aplicación Placeholder
+
+---
+
+**Documento generado automáticamente**  
+**Última actualización:** 2024  
+**Versión:** 1.0
